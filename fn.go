@@ -24,6 +24,13 @@ func AssertEqual[T comparable](t *testing.T, name string, a, b T) {
 	}
 }
 
+// AssertEqualAnd asserts that the two given values are equal and the boolean flag is true
+func AssertEqualAnd[T comparable](t *testing.T, name string, a, b T, flag1, flag2 bool) {
+	if a != b || flag1 != flag2 {
+		t.Errorf("%s = %v, %t, want %v, %t", name, a, flag1, b, flag2)
+	}
+}
+
 // AssertEqualAny checks for if two `any` items are equal
 func AssertEqualAny(t *testing.T, name string, a, b any) {
 	defer func() {
@@ -36,6 +43,18 @@ func AssertEqualAny(t *testing.T, name string, a, b any) {
 	}
 }
 
+// AssertEqualAnyAnd checks for if two `any` items are equal
+func AssertEqualAnyAnd(t *testing.T, name string, a, b any, flag1, flag2 bool) {
+	defer func() {
+		if r := recover(); r != nil {
+			t.Errorf("%s panicked", name)
+		}
+	}()
+	if a != b || flag1 != flag2 {
+		t.Errorf("%s = %v, %t, want %v, %t", name, a, flag1, b, flag2)
+	}
+}
+
 // AssertListEqual asserts that the two given lists are equal
 func AssertListEqual[S ~[]T, T comparable](t *testing.T, name string, a, b S) {
 	if slices.Equal(a, b) == false {
@@ -43,10 +62,24 @@ func AssertListEqual[S ~[]T, T comparable](t *testing.T, name string, a, b S) {
 	}
 }
 
+// AssertListEqualAnd asserts that the two given lists are equal
+func AssertListEqualAnd[S ~[]T, T comparable](t *testing.T, name string, a, b S, flag1, flag2 bool) {
+	if slices.Equal(a, b) == false || flag1 != flag2 {
+		t.Errorf("%s = %v, %t, want %v, %t", name, a, flag1, b, flag2)
+	}
+}
+
 // AssertMapEqual asserts that the two given maps are equal
 func AssertMapEqual[M1, M2 ~map[K]V, K, V comparable](t *testing.T, name string, a M1, b M2) {
 	if maps.Equal(a, b) == false {
 		t.Errorf("%s = %v, want %v", name, a, b)
+	}
+}
+
+// AssertMapEqualAnd asserts that the two given maps are equal
+func AssertMapEqualAnd[M1, M2 ~map[K]V, K, V comparable](t *testing.T, name string, a M1, b M2, flag1, flag2 bool) {
+	if maps.Equal(a, b) == false || flag1 != flag2 {
+		t.Errorf("%s = %v, %t, want %v, %t", name, a, flag1, b, flag2)
 	}
 }
 
