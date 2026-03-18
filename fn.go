@@ -15,6 +15,18 @@ func AssertEqual[T comparable](t *testing.T, name string, a, b T) {
 	}
 }
 
+// AssertEqualAny checks for if two `any` items are equal
+func AssertEqualAny(t *testing.T, name string, a, b any) {
+	defer func() {
+		if r := recover(); r != nil {
+			t.Errorf("%s panicked", name)
+		}
+	}()
+	if a != b {
+		t.Errorf("%s = %v, want %v", name, a, b)
+	}
+}
+
 // AssertListEqual asserts that the two given lists are equal
 func AssertListEqual[S ~[]T, T comparable](t *testing.T, name string, a, b S) {
 	if slices.Equal(a, b) == false {
