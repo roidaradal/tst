@@ -6,6 +6,10 @@ import (
 	"testing"
 )
 
+type HasPostTest interface {
+	PostTest() bool
+}
+
 type P1W1[I, R any] struct {
 	P1 I
 	W1 R
@@ -45,6 +49,14 @@ func AllCompare1[T, R any](t *testing.T, testCases []T, name string, testFn func
 		actual, want := testFn(x)
 		label := fmt.Sprintf("%s:%d", name, i)
 		assert(t, label, actual, want)
+	}
+}
+
+// AllActionPost performs the action for all generic test cases and checks the post test
+func AllActionPost[T HasPostTest](t *testing.T, testCases []T, name string, actionFn func(T)) {
+	for _, x := range testCases {
+		actionFn(x)
+		assertTest(t, name, x.PostTest)
 	}
 }
 
