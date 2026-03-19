@@ -10,23 +10,27 @@ type HasPostTest interface {
 	PostTest() bool
 }
 
+// Test case with 1 input, 1 output
 type P1W1[I, R any] struct {
 	P1 I
 	W1 R
 }
 
+// Test case with 1 input, 2 outputs
 type P1W2[I, R1, R2 any] struct {
 	P1 I
 	W1 R1
 	W2 R2
 }
 
+// Test case with 2 inputs, 1 output
 type P2W1[I1, I2, R any] struct {
 	P1 I1
 	P2 I2
 	W1 R
 }
 
+// Test case with 2 inputs, 2 outputs
 type P2W2[I1, I2, R1, R2 any] struct {
 	P1 I1
 	P2 I2
@@ -34,6 +38,7 @@ type P2W2[I1, I2, R1, R2 any] struct {
 	W2 R2
 }
 
+// Test case with 3 inputs, 1 output
 type P3W1[I1, I2, I3, R any] struct {
 	P1 I1
 	P2 I2
@@ -41,6 +46,7 @@ type P3W1[I1, I2, I3, R any] struct {
 	W1 R
 }
 
+// Test case with 3 inputs, 1 output, and a post-test
 type P3W1Post[I1, I2, I3, R any] struct {
 	P1   I1
 	P2   I2

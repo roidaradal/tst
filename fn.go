@@ -195,3 +195,24 @@ func notNilString(notNil bool) string {
 	}
 	return "<nil>"
 }
+
+// FlipP1W1 flips the boolean output flag of the P1W1 test case
+func FlipP1W1[I any](testCases []P1W1[I, bool]) []P1W1[I, bool] {
+	return Convert(testCases, func(tc P1W1[I, bool]) P1W1[I, bool] {
+		return P1W1[I, bool]{tc.P1, !tc.W1}
+	})
+}
+
+// FlipP2W1 flips the boolean output flag of the P2W1 test case
+func FlipP2W1[I1, I2 any](testCases []P2W1[I1, I2, bool]) []P2W1[I1, I2, bool] {
+	return Convert(testCases, func(tc P2W1[I1, I2, bool]) P2W1[I1, I2, bool] {
+		return P2W1[I1, I2, bool]{tc.P1, tc.P2, !tc.W1}
+	})
+}
+
+// FlipP3W1 flips the boolean output flag of the P3W1 test case
+func FlipP3W1[I1, I2, I3 any](testCases []P3W1[I1, I2, I3, bool]) []P3W1[I1, I2, I3, bool] {
+	return Convert(testCases, func(tc P3W1[I1, I2, I3, bool]) P3W1[I1, I2, I3, bool] {
+		return P3W1[I1, I2, I3, bool]{tc.P1, tc.P2, tc.P3, !tc.W1}
+	})
+}
