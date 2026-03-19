@@ -32,6 +32,20 @@ func AssertFalse(t *testing.T, name string, condition bool) {
 	}
 }
 
+// AssertError asserts that the given error is not nil
+func AssertError(t *testing.T, name string, err error) {
+	if err == nil {
+		t.Errorf("%s = nil, want error", name)
+	}
+}
+
+// AssertNoError asserts that the given error is nil
+func AssertNoError(t *testing.T, name string, err error) {
+	if err != nil {
+		t.Errorf("%s = %v, want nil", name, err)
+	}
+}
+
 // AssertDeepEqual asserts that the two `any` items are deeply equal
 func AssertDeepEqual(t *testing.T, name string, a, b any) {
 	if reflect.DeepEqual(a, b) == false {
