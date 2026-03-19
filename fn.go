@@ -10,8 +10,8 @@ import (
 type assertFn[T any] = func(*testing.T, string, T, T)
 
 // Convert maps the list of items to a new list using the conversion function
-func Convert[T any](items []T, convert func(T) T) []T {
-	items2 := make([]T, len(items))
+func Convert[T, V any](items []T, convert func(T) V) []V {
+	items2 := make([]V, len(items))
 	for i, item := range items {
 		items2[i] = convert(item)
 	}
