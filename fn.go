@@ -152,6 +152,31 @@ func AssertListEqual[S ~[]T, T comparable](t *testing.T, name string, a, b S) {
 	}
 }
 
+// AssertListMixedEqual asserts that the two given lists are equal, with pointers and nil checks handled
+func AssertListMixedEqual[S ~[]T, T comparable](t *testing.T, name string, a, b S) {
+	if len(a) != len(b) {
+		t.Errorf("%s = %v, want %v", name, a, b)
+		return
+	}
+	for i, x := range a {
+		y := b[i]
+		nilX, nilY := isNil(x), isNil(y)
+		if nilX && nilY {
+			// both nil = equal
+			continue
+		}
+		if nilX != nilY {
+			// one is nil, while the other is not nil = not equal
+			t.Errorf("%s = %v, want %v", name, a, b)
+			return
+		}
+		if x != y {
+			t.Errorf("%s = %v, want %v", name, a, b)
+			return
+		}
+	}
+}
+
 // AssertListEqualAnd asserts that the two given lists are equal and the boolean flags are equal
 func AssertListEqualAnd[S ~[]T, T comparable](t *testing.T, name string, a, b S, flag1, flag2 bool) {
 	if flag1 != flag2 || slices.Equal(a, b) == false {
