@@ -10,27 +10,27 @@ type HasPostTest interface {
 	PostTest() bool
 }
 
-// Test case with 1 input, 1 output
+// P1W1 Test case with 1 input, 1 output
 type P1W1[I, R any] struct {
 	P1 I
 	W1 R
 }
 
-// Test case with 1 input, 2 outputs
+// P1W2 Test case with 1 input, 2 outputs
 type P1W2[I, R1, R2 any] struct {
 	P1 I
 	W1 R1
 	W2 R2
 }
 
-// Test case with 2 inputs, 1 output
+// P2W1 Test case with 2 inputs, 1 output
 type P2W1[I1, I2, R any] struct {
 	P1 I1
 	P2 I2
 	W1 R
 }
 
-// Test case with 2 inputs, 2 outputs
+// P2W2 Test case with 2 inputs, 2 outputs
 type P2W2[I1, I2, R1, R2 any] struct {
 	P1 I1
 	P2 I2
@@ -38,7 +38,16 @@ type P2W2[I1, I2, R1, R2 any] struct {
 	W2 R2
 }
 
-// Test case with 3 inputs, 1 output
+// P2W2Pre Test Case with 2 inputs, 2 outputs, and a prepare step
+type P2W2Pre[I1, I2, R1, R2 any] struct {
+	P1   I1
+	P2   I2
+	W1   R1
+	W2   R2
+	Prep func()
+}
+
+// P3W1 Test case with 3 inputs, 1 output
 type P3W1[I1, I2, I3, R any] struct {
 	P1 I1
 	P2 I2
@@ -46,7 +55,7 @@ type P3W1[I1, I2, I3, R any] struct {
 	W1 R
 }
 
-// Test case with 3 inputs, 2 output
+// P3W2 Test case with 3 inputs, 2 outputs
 type P3W2[I1, I2, I3, R1, R2 any] struct {
 	P1 I1
 	P2 I2
@@ -55,7 +64,7 @@ type P3W2[I1, I2, I3, R1, R2 any] struct {
 	W2 R2
 }
 
-// Test case with 3 inputs, 1 output, and a post-test
+// P3W1Post Test case with 3 inputs, 1 output, and a post-test
 type P3W1Post[I1, I2, I3, R any] struct {
 	P1   I1
 	P2   I2
@@ -73,7 +82,7 @@ func AllCompare1[T, R any](t *testing.T, testCases []T, name string, testFn func
 	}
 }
 
-// AllActionPost performs the action for all generic test cases and checks the post test
+// AllActionPost performs the action for all generic test cases and checks the post-test
 func AllActionPost[T HasPostTest](t *testing.T, testCases []T, name string, actionFn func(T)) {
 	for i, x := range testCases {
 		label := fmt.Sprintf("%s:%d", name, i)
@@ -123,6 +132,17 @@ func AllP2W1[I1, I2, R any](t *testing.T, testCases []P2W1[I1, I2, R], name stri
 func AllP2W2[I1, I2, R1, R2 any](t *testing.T, testCases []P2W2[I1, I2, R1, R2], name string, testFn func(I1, I2) (R1, R2), assert1 assertFn[R1], assert2 assertFn[R2]) {
 	for i, x := range testCases {
 		label := fmt.Sprintf("%s:%d", name, i)
+		actual1, actual2 := testFn(x.P1, x.P2)
+		assert1(t, label, actual1, x.W1)
+		assert2(t, label, actual2, x.W2)
+	}
+}
+
+// AllP2W2Pre tests all P2W2Pre test cases
+func AllP2W2Pre[I1, I2, R1, R2 any](t *testing.T, testCases []P2W2Pre[I1, I2, R1, R2], name string, testFn func(I1, I2) (R1, R2), assert1 assertFn[R1], assert2 assertFn[R2]) {
+	for i, x := range testCases {
+		label := fmt.Sprintf("%s:%d", name, i)
+		x.Prep()
 		actual1, actual2 := testFn(x.P1, x.P2)
 		assert1(t, label, actual1, x.W1)
 		assert2(t, label, actual2, x.W2)
