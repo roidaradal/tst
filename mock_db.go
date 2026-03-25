@@ -1,11 +1,17 @@
 package tst
 
-import "database/sql"
+import (
+	"database/sql"
+	"errors"
+)
+
+var errNotFound = errors.New("not found")
 
 type Conn[T any] struct {
-	items []T
-	err   error
-	row   *Row
+	items  []T
+	err    error
+	testFn func(T) bool
+	rowFn  func([]T) ([]any, error)
 }
 
 func NewConn[T any](items ...T) *Conn[T] {
@@ -22,19 +28,28 @@ func (c *Conn[T]) Exec(query string, args ...any) (sql.Result, error) {
 	return nil, c.err
 }
 
-func (c *Conn[T]) QueryRow(query string, args ...any) *Row {
-	return c.row
-}
-
 func (c *Conn[T]) Query(query string, args ...any) (*Rows, error) {
 	// TODO: Implement
 	return nil, c.err
 }
 
-func (c *Conn[T]) SetError(err error) {
-	c.err = err
+func (c *Conn[T]) QueryRow(query string, args ...any) *Row {
+	if c.testFn == nil || c.rowFn == nil || c.err != nil {
+		return NewRow()
+	}
+	validItems := make([]T, 0, len(c.items))
+	for _, item := range c.items {
+		if c.testFn(item) {
+			validItems = append(validItems, item)
+		}
+	}
+	items, err := c.rowFn(validItems)
+	if err != nil {
+		return NewRow()
+	}
+	return NewRow(items...)
 }
 
-func (c *Conn[T]) SetRow(row *Row) {
-	c.row = row
+func (c *Conn[T]) SetError(err error) {
+	c.err = err
 }

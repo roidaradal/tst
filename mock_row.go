@@ -40,6 +40,8 @@ func (r *Row) Scan(fieldRefs ...any) (err error) {
 }
 
 func (r *Rows) Close() error {
+	r.items = nil
+	r.index = -1
 	return nil
 }
 
