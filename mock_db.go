@@ -205,3 +205,11 @@ func (c *Conn[T]) PrepGroupErr(testFn func(T) bool, groupFn func([]T) [][]any, r
 		c.rowsErr = rowsErr
 	}
 }
+
+func (c *Conn[T]) PrepExec(execFn func([]T) ([]T, error), result sql.Result) func() {
+	return func() {
+		c.SetError(nil)
+		c.execFn = execFn
+		c.execResult = result
+	}
+}
