@@ -177,3 +177,15 @@ func (c *Conn[T]) PrepGroup(testFn func(T) bool, groupFn func([]T) [][]any) func
 		c.rowsErr = nil
 	}
 }
+
+func (c *Conn[T]) PrepGroupErr(testFn func(T) bool, groupFn func([]T) [][]any, rowsErr error) func() {
+	return func() {
+		c.SetError(nil)
+		c.testFn = testFn
+		c.rowsFn = nil
+		c.sortFn = nil
+		c.limit = 0
+		c.groupFn = groupFn
+		c.rowsErr = rowsErr
+	}
+}
