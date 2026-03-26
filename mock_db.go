@@ -14,6 +14,7 @@ var (
 type Conn[T any] struct {
 	items   []T
 	err     error
+	rowsErr error
 	testFn  func(T) bool
 	rowFn   func([]T) ([]any, error)
 	rowsFn  func(T) []any
@@ -66,7 +67,11 @@ func (c *Conn[T]) Query(query string, args ...any) (*Rows, error) {
 			rowValues[i] = c.rowsFn(item)
 		}
 	}
-	return NewRows(rowValues...), nil
+	rows := NewRows(rowValues...)
+	if c.rowsErr != nil {
+		rows.SetError(c.rowsErr)
+	}
+	return rows, nil
 }
 
 func (c *Conn[T]) QueryRow(query string, args ...any) *Row {
@@ -133,6 +138,19 @@ func (c *Conn[T]) PrepRows(testFn func(T) bool, rowsFn func(T) []any) func() {
 		c.sortFn = nil
 		c.limit = 0
 		c.groupFn = nil
+		c.rowsErr = nil
+	}
+}
+
+func (c *Conn[T]) PrepRowsErr(testFn func(T) bool, rowsFn func(T) []any, rowsErr error) func() {
+	return func() {
+		c.SetError(nil)
+		c.testFn = testFn
+		c.rowsFn = rowsFn
+		c.sortFn = nil
+		c.limit = 0
+		c.groupFn = nil
+		c.rowsErr = rowsErr
 	}
 }
 
@@ -144,6 +162,7 @@ func (c *Conn[T]) PrepSortRows(testFn func(T) bool, rowsFn func(T) []any, sortFn
 		c.sortFn = sortFn
 		c.limit = limit
 		c.groupFn = nil
+		c.rowsErr = nil
 	}
 }
 
@@ -155,5 +174,6 @@ func (c *Conn[T]) PrepGroup(testFn func(T) bool, groupFn func([]T) [][]any) func
 		c.sortFn = nil
 		c.limit = 0
 		c.groupFn = groupFn
+		c.rowsErr = nil
 	}
 }
