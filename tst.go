@@ -57,6 +57,17 @@ type P2W3Pre[I1, I2, R1, R2, R3 any] struct {
 	W3   R3
 }
 
+// P2W4Pre Test Case with 2 inputs, 4 outputs, and a `prepare` step
+type P2W4Pre[I1, I2, R1, R2, R3, R4 any] struct {
+	Prep func()
+	P1   I1
+	P2   I2
+	W1   R1
+	W2   R2
+	W3   R3
+	W4   R4
+}
+
 // P3W1 Test case with 3 inputs, 1 output
 type P3W1[I1, I2, I3, R any] struct {
 	P1 I1
@@ -172,6 +183,21 @@ func AllP2W3Pre[I1, I2, R1, R2, R3 any](t *testing.T, testCases []P2W3Pre[I1, I2
 		assert1(t, label, actual1, x.W1)
 		assert2(t, label, actual2, x.W2)
 		assert3(t, label, actual3, x.W3)
+	}
+}
+
+// AllP2W4Pre tests all P2W4Pre test cases
+func AllP2W4Pre[I1, I2, R1, R2, R3, R4 any](t *testing.T, testCases []P2W4Pre[I1, I2, R1, R2, R3, R4], name string, testFn func(I1, I2) (R1, R2, R3, R4), assert1 assertFn[R1], assert2 assertFn[R2], assert3 assertFn[R3], assert4 assertFn[R4]) {
+	for i, x := range testCases {
+		label := fmt.Sprintf("%s:%d", name, i)
+		if x.Prep != nil {
+			x.Prep()
+		}
+		actual1, actual2, actual3, actual4 := testFn(x.P1, x.P2)
+		assert1(t, label, actual1, x.W1)
+		assert2(t, label, actual2, x.W2)
+		assert3(t, label, actual3, x.W3)
+		assert4(t, label, actual4, x.W4)
 	}
 }
 
